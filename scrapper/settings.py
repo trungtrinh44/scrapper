@@ -14,9 +14,12 @@ BOT_NAME = 'scrapper'
 SPIDER_MODULES = ['scrapper.spiders']
 NEWSPIDER_MODULE = 'scrapper.spiders'
 ITEM_PIPELINES = {
-    'scrapper.pipelines.JsonWriterPipeline': 300,
+    'scrapper.pipelines.MongoPipeline': 300,
 }
-
+MONGODB_SERVER = "localhost"
+MONGODB_PORT = 27017
+MONGODB_DB = "tuoitre"
+MONGODB_COLLECTION = "articles"
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scrapper (+http://www.yourdomain.com)'
 

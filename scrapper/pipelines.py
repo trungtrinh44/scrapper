@@ -21,3 +21,26 @@ class JsonWriterPipeline(object):
         line = json.dumps(dict(item), ensure_ascii=False) + "\n"
         self.file.write(line)
         return item
+
+
+import pymongo
+from scrapy.conf import settings
+
+
+class MongoPipeline(object):
+
+    collection_name = 'scrapy_items'
+
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(
+            settings['MONGODB_SERVER'],
+            settings['MONGODB_PORT']
+        )
+        self.db = self.client[settings['MONGODB_DB']]
+
+    def close_spider(self, spider):
+        self.client.close()
+
+    def process_item(self, item, spider):
+        self.db[settings['MONGODB_COLLECTION']].insert_one(item)
+        return item
