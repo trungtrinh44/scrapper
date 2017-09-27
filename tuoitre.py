@@ -1,11 +1,5 @@
-# coding: utf-8
-
-# In[1]:
-
 import scrapy
 
-
-# In[14]:
 
 class TuoiTreSpider(scrapy.Spider):
     name = "tuoitre_scrapper"
@@ -28,27 +22,25 @@ class TuoiTreSpider(scrapy.Spider):
     def start_requests(self):
         for x in TuoiTreSpider.path:
             yield scrapy.http.Request(url=TuoiTreSpider.url % (TuoiTreSpider.path[x], self.count[x]), callback=self.parse_with_type(x))
-        # yield scrapy.http.Request(url='http://tuoitre.vn/gan-nua-the-ky-me-moi-biet-con-la-liet-si-20170927152828146.htm', callback=self.parse_article)
 
     def parse_with_type(self, _type):
         def parse(response):
             paths = response.selector.xpath('//a/@href').extract()
             if paths:
                 for path in paths:
-                    yield scrapy.http.Request(url=TuoiTreSpider.root_path + path, callback=self.parse_article)
+                    yield scrapy.http.Request(url=TuoiTreSpider.root_path + path, callback=self.parse_article(_type))
                 self.count[_type] += 1
                 yield scrapy.http.Request(url=TuoiTreSpider.url % (TuoiTreSpider.path[_type], self.count[_type]), callback=parse)
         return parse
 
-    def parse_article(self, response):
-        left_side = response.selector.xpath('//div[@class="left-side"]')
-        title = left_side.xpath(
-            '//h1[@class="title-2"]/text()').extract()[0].rstrip().lstrip()
-        summary = left_side.xpath(
-            '//h2[@class="txt-head"]/text()').extract()[0].rstrip().lstrip()
-        content = '\n'.join(left_side.xpath(
-            '//div[@class="fck"]/p/text()').extract()).lstrip().rstrip()
-        print(title)
-        print(summary)
-        print(content)
-        # In[ ]:
+    def parse_article(self, _type):
+        def parse(response):
+            left_side = response.selector.xpath('//div[@class="left-side"]')
+            title = left_side.xpath(
+                '//h1[@class="title-2"]/text()').extract()[0].rstrip().lstrip()
+            summary = left_side.xpath(
+                '//h2[@class="txt-head"]/text()').extract()[0].rstrip().lstrip()
+            content = '\n'.join(left_side.xpath(
+                '//div[@class="fck"]/p/text()').extract()).lstrip().rstrip()
+            return {'title': title, 'summary': summary, 'content': content, 'type': _type}
+        return parse
