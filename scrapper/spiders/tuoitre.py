@@ -41,6 +41,7 @@ class TuoiTreSpider(scrapy.Spider):
             summary = left_side.xpath(
                 '//h2[@class="txt-head"]/text()').extract()[0].rstrip().lstrip()
             content = '\n'.join(left_side.xpath(
-                '//div[@class="fck"]/p/text()').extract()).lstrip().rstrip()
-            return {'title': title, 'summary': summary, 'content': content, 'type': _type}
+                '//div[@class="fck"]/p//text()').extract()).lstrip().rstrip()
+            date = left_side.xpath('//span[@class="date"]/text()').extract()[0]
+            return {'_id': response.url, 'date': date, 'title': title, 'summary': summary, 'content': content, 'type': _type}
         return parse
