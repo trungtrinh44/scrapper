@@ -33,7 +33,6 @@ class ZingSpider(scrapy.Spider):
         def parse(response):
             paths = response.selector.xpath(
                 '//*[@id="category"]//p[@class="title"]/a/@href').extract()
-            print(paths)
             if paths:
                 for path in paths:
                     yield scrapy.http.Request(url=ZingSpider.root_path + path, callback=self.parse_article(_type))

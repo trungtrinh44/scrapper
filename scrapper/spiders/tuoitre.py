@@ -12,7 +12,8 @@ class TuoiTreSpider(scrapy.Spider):
             'Van hoa/Van hoa': 200017, 'Van hoa/Doi song': 200018, 'Van hoa/Van hoa doc sach': 61,
             'Giai tri/Giai tri': 10, 'Giai tri/Am nhac': 58, 'Giai tri/Dien anh': 57, 'Giai tri/TV show': 385, 'Giai tri/Thoi trang': 919, 'Giai tri/Hau truong': 922,
             'Giao duc/Giao duc': 13, 'Giao duc/Hoc duong': 1507, 'Giao duc/Du hoc': 85, 'Giao duc/Cau chuyen giao duc': 913, 'Giao duc/Goc hoc tap':  200020,
-            'Khoa hoc/Khoa hoc': 661, 'Khoa hoc/Thuong thuc': 200010, 'Khoa hoc/Phat minh': 200011}
+            'Khoa hoc/Khoa hoc': 661, 'Khoa hoc/Thuong thuc': 200010, 'Khoa hoc/Phat minh': 200011,
+            'Ban doc lam bao/Ban doc lam bao': 118, 'Ban doc lam bao/Duong day nong': 937, 'Ban doc lam bao/Tieu diem': 1360, 'Ban doc lam bao/Chia se': 940}
     root_path = 'http://tuoitre.vn'
     url = root_path + "/timeline/%d/trang-%d.htm"
 
@@ -43,5 +44,7 @@ class TuoiTreSpider(scrapy.Spider):
             content = '\n'.join(left_side.xpath(
                 '//div[@class="fck"]/p//text()').extract()).lstrip().rstrip()
             date = left_side.xpath('//span[@class="date"]/text()').extract()[0]
-            return {'_id': response.url, 'date': date, 'title': title, 'summary': summary, 'content': content, 'type': _type}
+            tags = left_side.xpath(
+                '//ul[@class="block-key"]/li/a/text()').extract()
+            return {'_id': response.url, 'date': date, 'title': title, 'summary': summary, 'content': content, 'type': _type, 'tags': tags}
         return parse
