@@ -1,6 +1,10 @@
 import scrapy
 
 
+def compare_list(x, y):
+    return frozenset(x).intersection(y)
+
+
 class ZingSpider(scrapy.Spider):
     name = "zing_scrapper"
     path = {'Thời sự/Giao thông': 'giao-thong', 'Thời sự/Thời sự': 'thoi-su', 'Thời sự/Đô thị': 'do-thi', 'Thời sự/Đời sống': 'doi-song', 'Thời sự/Quốc phòng': 'quoc-phong',
@@ -23,7 +27,7 @@ class ZingSpider(scrapy.Spider):
     url = root_path + '/%s/trang%d.html'
 
     def __init__(self):
-        self.count = {x: 0 for x in ZingSpider.path}
+        self.count = {x: 1 for x in ZingSpider.path}
 
     def start_requests(self):
         for x in ZingSpider.path:
@@ -33,11 +37,13 @@ class ZingSpider(scrapy.Spider):
         def parse(response):
             paths = response.selector.xpath(
                 '//*[@id="category"]//p[@class="title"]/a/@href').extract()
-            if paths:
+            if paths and len(compare_list(paths, parse.prev_paths)) != len(paths):
+                parse.prev_paths = paths
                 for path in paths:
                     yield scrapy.http.Request(url=ZingSpider.root_path + path, callback=self.parse_article(_type))
                 self.count[_type] += 1
                 yield scrapy.http.Request(url=ZingSpider.url % (ZingSpider.path[_type], self.count[_type]), callback=parse)
+        parse.prev_paths = []
         return parse
 
     def parse_article(self, _type):
