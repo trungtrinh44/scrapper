@@ -1,5 +1,5 @@
 import scrapy
-from pyvi.pyvi import ViTokenizer
+# from pyvi.pyvi import ViTokenizer
 
 
 class MuaBanSpider(scrapy.Spider):

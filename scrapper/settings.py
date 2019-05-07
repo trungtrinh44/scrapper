@@ -16,9 +16,9 @@ NEWSPIDER_MODULE = 'scrapper.spiders'
 ITEM_PIPELINES = {
     'scrapper.pipelines.MongoPipeline': 300,
 }
-MONGODB_SERVER = "localhost"
+MONGODB_SERVER = "192.168.50.4"
 MONGODB_PORT = 27017
-MONGODB_DB = "zing"
+MONGODB_DB = "tuoitre"
 MONGODB_COLLECTION = "articles"
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scrapper (+http://www.yourdomain.com)'

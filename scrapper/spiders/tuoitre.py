@@ -2,7 +2,7 @@ import scrapy
 
 
 class TuoiTreSpider(scrapy.Spider):
-    name = "tuoitre_scrapper"
+    name = "tuoitre"
     path = {'Thoi su/Thoi su': 3,  'Thoi su/Xa hoi': 200003, 'Thoi su/Phong su': 89, 'Thoi su/Nghi': 87,
             'The gioi/The gioi': 2, 'The gioi/Binh luan': 94,  'The gioi/Kieu bao': 312, 'The gioi/Muon mau': 442, 'The gioi/Ho so': 20,
             'Phap luat/Phap luat': 6, 'Phap luat/Chuyen phap dinh': 266, 'Phap luat/Tu van': 79, 'Phap luat/Phap ly': 200005,
@@ -18,7 +18,7 @@ class TuoiTreSpider(scrapy.Spider):
     url = root_path + "/timeline/%d/trang-%d.htm"
 
     def __init__(self):
-        self.count = {x: 0 for x in TuoiTreSpider.path}
+        self.count = {x: 1 for x in TuoiTreSpider.path}
 
     def start_requests(self):
         for x in TuoiTreSpider.path:
@@ -36,15 +36,12 @@ class TuoiTreSpider(scrapy.Spider):
 
     def parse_article(self, _type):
         def parse(response):
-            left_side = response.selector.xpath('//div[@class="left-side"]')
-            title = left_side.xpath(
-                '//h1[@class="title-2"]/text()').extract()[0].rstrip().lstrip()
-            summary = left_side.xpath(
-                '//h2[@class="txt-head"]/text()').extract()[0].rstrip().lstrip()
-            content = '\n'.join(left_side.xpath(
-                '//div[@class="fck"]/p//text()').extract()).lstrip().rstrip()
-            date = left_side.xpath('//span[@class="date"]/text()').extract()[0]
-            tags = left_side.xpath(
-                '//ul[@class="block-key"]/li/a/text()').extract()
-            return {'_id': response.url, 'date': date, 'title': title, 'summary': summary, 'content': content, 'type': _type, 'tags': tags}
+            left_side = response.css("section#content div.content div#main-detail")
+            title = left_side.css("div.w980 h1.article-title").xpath('.//text()').extract_first().strip()
+            date = left_side.css("div.w980 div.date-time").xpath('.//text()').extract_first().strip()
+            left_side = left_side.css("section.detail-w div#mainContentDetail div.column-first-second div.main-content-body")
+            summary = left_side.css("h2.sapo").xpath('.//text()').extract_first().lstrip("TTO -").strip()
+            content = ' '.join(x.strip() for x in left_side.css("div#main-detail-body > p").xpath('.//text()').extract())
+            # tags = left_side.xpath('//ul[@class="block-key"]/li/a/text()').extract()
+            return {'_id': response.url, 'date': date, 'title': title, 'summary': summary, 'content': content, 'type': _type}  # , 'tags': tags}
         return parse
