@@ -1,3 +1,5 @@
+import unicodedata
+
 import scrapy
 
 
@@ -44,7 +46,7 @@ class TuoiTreSpider(scrapy.Spider):
             if summary.startswith("TTO -"):
                 summary = summary[5:]
             summary = summary.strip()
-            content = ' '.join(x.strip() for x in left_side.css("div#main-detail-body > *:not(div):not(b)").xpath('.//text()').extract())
+            content = '\n'.join(' '.join(unicodedata.normalize('NFKC', y) for y in x.xpath('.//text()').extract()) for x in left_side.css("div#main-detail-body > *:not(div):not(b)"))
             # tags = left_side.xpath('//ul[@class="block-key"]/li/a/text()').extract()
             return {'_id': response.url, 'date': date, 'title': title, 'summary': summary, 'content': content, 'type': _type}  # , 'tags': tags}
         return parse
