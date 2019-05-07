@@ -39,7 +39,8 @@ class TuoiTreSpider(scrapy.Spider):
     def parse_article(self, _type):
         def parse(response):
             left_side = response.css("section#content div.content div#main-detail")
-            title = left_side.css("div.w980 h1.article-title").xpath('.//text()').extract_first().strip()
+            title = left_side.css("div.w980 h1.article-title").xpath('.//text()').extract_first()
+            title = title if title is None else title.strip()
             date = left_side.css("div.w980 div.date-time").xpath('.//text()').extract_first().strip()
             left_side = left_side.css("section.detail-w div#mainContentDetail div.column-first-second div.main-content-body")
             summary = left_side.css("h2.sapo").xpath('.//text()').extract_first()
