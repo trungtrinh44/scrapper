@@ -41,7 +41,7 @@ class TuoiTreSpider(scrapy.Spider):
             date = left_side.css("div.w980 div.date-time").xpath('.//text()').extract_first().strip()
             left_side = left_side.css("section.detail-w div#mainContentDetail div.column-first-second div.main-content-body")
             summary = left_side.css("h2.sapo").xpath('.//text()').extract_first().lstrip("TTO -").strip()
-            content = ' '.join(x.strip() for x in left_side.css("div#main-detail-body > p").xpath('.//text()').extract())
+            content = ' '.join(x.strip() for x in left_side.css("div#main-detail-body > p").xpath('.//text()').extract() if len(x.split()) >= 10)
             # tags = left_side.xpath('//ul[@class="block-key"]/li/a/text()').extract()
             return {'_id': response.url, 'date': date, 'title': title, 'summary': summary, 'content': content, 'type': _type}  # , 'tags': tags}
         return parse
