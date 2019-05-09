@@ -17,22 +17,22 @@ class ThanhNienSpider(scrapy.Spider):
             yield scrapy.Request(link, callback=self.parse_second_level)
 
     def parse_second_level(self, response):
-        for link in self.parse_third_level(response):
+        for link in self.parse_third_level(1, response.url)(response):
             yield link
         links = response.css('nav.site-header__nav a::attr(href)').extract()
         normal_links = [self.BASE_URL + x for x in links if not x.startswith('http') and "javascript" not in x]
         for link in normal_links:
-            yield scrapy.Request(link, callback=self.parse_third_level)
+            yield scrapy.Request(link, callback=self.parse_third_level(1, link))
 
-    def parse_third_level(self, response):
-        article_groups = response.css('div.cate-content div.zone--timeline')
-        nav_links = article_groups.css('nav#paging span#ctl00_main_ContentList1_pager ul.pagination li a::attr(href)').extract()
-        for link in nav_links:
-            yield scrapy.Request(self.BASE_URL + link, callback=self.parse_third_level)
-        article_links = article_groups.css('div.relative article.story a::attr(href)').extract()
-        for link in article_links:
-            link = '/'.join(link.split('/')[-2:])
-            yield scrapy.Request(self.BASE_URL + '/' + link, callback=self.parse_content)
+    def parse_third_level(self, count, orig):
+        def child(response):
+            article_groups = response.css('div.cate-content div.zone--timeline')
+            article_links = article_groups.css('div.relative article.story a::attr(href)').extract()
+            for link in article_links:
+                link = '/'.join(link.split('/')[-2:])
+                yield scrapy.Request(self.BASE_URL + '/' + link, callback=self.parse_content)
+            yield scrapy.Request(orig + 'trang-{}.html'.format(count+1), callback=self.parse_third_level(count+1, orig))
+        return child
 
     def parse_content(self, response):
         article = response.css("div#storybox")
