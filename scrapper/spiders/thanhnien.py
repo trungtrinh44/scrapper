@@ -37,7 +37,7 @@ class ThanhNienSpider(scrapy.Spider):
         article_links = article_groups.css('div.relative article.story a::attr(href)').extract()
         for link in article_links:
             link = '/'.join(link.split('/')[-2:])
-            yield scrapy.Request(self.BASE_URL + link, callback=self.parse_content)
+            yield scrapy.Request(self.BASE_URL + '/' + link, callback=self.parse_content)
             
 
     def parse_content(self, response):
