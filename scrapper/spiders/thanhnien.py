@@ -36,7 +36,12 @@ class ThanhNienSpider(scrapy.Spider):
         article_groups = response.css('div.cate-content div.zone--timeline')
         article_links = article_groups.css('div.relative article.story a::attr(href)').extract()
         for link in article_links:
-            yield scrapy.Request(self.BASE_URL + link, callback=self.parse_content)
+            if link.startswith("http"):
+                yield scrapy.Request(link, callback=self.parse_content)
+            else:
+                yield scrapy.Request(self.BASE_URL + link, callback=self.parse_content)
+
+
 
     def parse_content(self, response):
         article = response.css("div#storybox")
