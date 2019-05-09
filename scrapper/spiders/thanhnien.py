@@ -1,6 +1,6 @@
 import scrapy
 # from pyvi.pyvi import ViTokenizer
-
+import unicodedata
 
 class ThanhNienSpider(scrapy.Spider):
     name = "thanhnien"
@@ -49,9 +49,9 @@ class ThanhNienSpider(scrapy.Spider):
         yield {
             '_id': response.url,
             'date': date,
-            'title': title,
-            'summary': summary,
-            'content': content,
+            'title': unicodedata.normalize('NFKC', title),
+            'summary': unicodedata.normalize('NFKC', summary),
+            'content': unicodedata.normalize('NFKC', content),
             'type': cat,
             # 'tags': tags
         }
