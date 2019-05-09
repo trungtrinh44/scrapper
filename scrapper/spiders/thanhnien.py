@@ -29,16 +29,10 @@ class ThanhNienSpider(scrapy.Spider):
         nav_links = article_groups.css('nav#paging span#ctl00_main_ContentList1_pager ul.pagination li a::attr(href)').extract()
         for link in nav_links:
             yield scrapy.Request(self.BASE_URL + link, callback=self.parse_third_level)
-        for link in self.parse_article_groups(response):
-            yield link
-
-    def parse_article_groups(self, response):
-        article_groups = response.css('div.cate-content div.zone--timeline')
         article_links = article_groups.css('div.relative article.story a::attr(href)').extract()
         for link in article_links:
             link = '/'.join(link.split('/')[-2:])
             yield scrapy.Request(self.BASE_URL + '/' + link, callback=self.parse_content)
-            
 
     def parse_content(self, response):
         article = response.css("div#storybox")
