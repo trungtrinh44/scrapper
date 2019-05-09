@@ -30,7 +30,7 @@ class ThanhNienSpider(scrapy.Spider):
         article_groups = response.css('div.cate-content div.zone--timeline')
         nav_links = article_groups.css('nav#paging span#ctl00_main_ContentList1_pager ul.pagination li a::attr(href)').extract()
         for link in nav_links:
-            yield scrapy.Request(self.BASE_URL + link, callback=self.parse_article_groups)
+            yield scrapy.Request(self.BASE_URL + link, callback=self.parse_third_level)
 
     def parse_article_groups(self, response):
         article_groups = response.css('div.cate-content div.zone--timeline')

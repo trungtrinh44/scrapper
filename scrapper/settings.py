@@ -18,7 +18,7 @@ ITEM_PIPELINES = {
 }
 MONGODB_SERVER = "192.168.50.4"
 MONGODB_PORT = 27017
-MONGODB_DB = "tuoitre"
+MONGODB_DB = "thanhnien"
 MONGODB_COLLECTION = "articles"
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scrapper (+http://www.yourdomain.com)'
